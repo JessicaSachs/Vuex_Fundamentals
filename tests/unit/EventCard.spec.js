@@ -10,13 +10,13 @@ const event = {
 
 describe('EventCard', () => {
   it(`renders the event's data successfully`, async () => {
-    const { findByTestId } = render(EventCard, {
+    render(EventCard, {
       props: {
         event
       }
     })
 
-    const card = await findByTestId('event')
+    const card = await screen.findByTestId('event')
     expect(card).toHaveTextContent('@12:00PM on September 29th, 2022')
     expect(card).toHaveTextContent(event.title)
   })
