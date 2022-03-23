@@ -1,3 +1,5 @@
+import { server } from '../../src/mocks/server'
+import { rest } from 'msw'
 import EventList from '@/views/EventList'
 import { render, waitFor } from '@testing-library/vue'
 import { createStore } from '@/store'
@@ -25,6 +27,32 @@ describe('EventList', () => {
     it('is rendered with the correct text', async () => {
       const { findByText } = mountEventList()
       expect(await findByText('Events for Good')).toBeInTheDocument()
+    })
+  })
+
+  describe('error', () => {
+    it('tells the router to show an error view', async () => {
+      server.use(
+        rest.get('*/events', (req, res, ctx) => {
+          return res(ctx.status(400), null)
+        })
+      )
+
+      const { getByText } = render(
+        {
+          template: `<router-view/>`
+        },
+        {
+          global: {
+            plugins: [createStore(), router]
+          }
+        }
+      )
+
+      await waitFor(() => {
+        expect(getByText('Oops! There was an error:')).toBeInTheDocument()
+        expect(getByText('Error: Request failed with status code 400')).toBeInTheDocument()
+      })
     })
   })
 
