@@ -1,4 +1,4 @@
-import { render } from '@testing-library/vue'
+import { render, screen } from '@testing-library/vue'
 import EventCard from '@/components/EventCard'
 
 const event = {
@@ -22,7 +22,7 @@ describe('EventCard', () => {
   })
 
   it(`handles null handles events without a date or time`, async () => {
-    const { findByTestId } = render(EventCard, {
+    render(EventCard, {
       props: {
         event: {
           ...event,
@@ -32,7 +32,7 @@ describe('EventCard', () => {
       }
     })
 
-    const card = await findByTestId('event')
+    const card = await screen.findByTestId('event')
 
     // Checking for the *omission* of text is best done with either
     // a visual regression test (using Percy) or using inline snapshots
@@ -42,7 +42,7 @@ describe('EventCard', () => {
   })
 
   it(`displays the time properly when there is no date`, async () => {
-    const { findByText } = render(EventCard, {
+    render(EventCard, {
       props: {
         event: {
           ...event,
@@ -51,11 +51,11 @@ describe('EventCard', () => {
       }
     })
 
-    expect(await findByText('@12:00PM')).toBeInTheDocument()
+    expect(await screen.findByText('@12:00PM')).toBeInTheDocument()
   })
 
   it(`displays the date properly when there is no time`, async () => {
-    const { findByText } = render(EventCard, {
+    render(EventCard, {
       props: {
         event: {
           ...event,
@@ -64,6 +64,6 @@ describe('EventCard', () => {
       }
     })
 
-    expect(await findByText('on September 29th, 2022')).toBeInTheDocument()
+    expect(await screen.findByText('on September 29th, 2022')).toBeInTheDocument()
   })
 })
