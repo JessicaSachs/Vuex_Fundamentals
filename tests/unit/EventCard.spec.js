@@ -1,24 +1,69 @@
-import { mount } from '@vue/test-utils'
+import { render } from '@testing-library/vue'
 import EventCard from '@/components/EventCard'
 
-describe('EventCard', () => {
-  it(`renders the event's data successfully`, () => {
-    const event = {
-      id: 1,
-      time: '12:00PM',
-      date: 'September 29th, 2022',
-      title: 'Coaching Little League'
-    }
+const event = {
+  id: 1,
+  time: '12:00PM',
+  date: 'September 29th, 2022',
+  title: 'Coaching Little League'
+}
 
-    const wrapper = mount(EventCard, {
+describe('EventCard', () => {
+  it(`renders the event's data successfully`, async () => {
+    const { findByTestId } = render(EventCard, {
       props: {
         event
       }
     })
 
-    const wrapperHtml = wrapper.html()
-    expect(wrapperHtml).toContain(event.date)
-    expect(wrapperHtml).toContain(event.time)
-    expect(wrapperHtml).toContain(event.title)
+    const card = await findByTestId('event')
+    expect(card).toHaveTextContent('@12:00PM on September 29th, 2022')
+    expect(card).toHaveTextContent(event.title)
+  })
+
+  it(`handles null handles events without a date or time`, async () => {
+    const { findByTestId } = render(EventCard, {
+      props: {
+        event: {
+          ...event,
+          time: null,
+          date: null
+        }
+      }
+    })
+
+    const card = await findByTestId('event')
+
+    // Checking for the *omission* of text is best done with either
+    // a visual regression test (using Percy) or using inline snapshots
+    expect(card).not.toHaveTextContent('@')
+    expect(card).not.toHaveTextContent('on')
+    expect(card).toHaveTextContent(event.title)
+  })
+
+  it(`displays the time properly when there is no date`, async () => {
+    const { findByText } = render(EventCard, {
+      props: {
+        event: {
+          ...event,
+          date: null
+        }
+      }
+    })
+
+    expect(await findByText('@12:00PM')).toBeInTheDocument()
+  })
+
+  it(`displays the date properly when there is no time`, async () => {
+    const { findByText } = render(EventCard, {
+      props: {
+        event: {
+          ...event,
+          time: null
+        }
+      }
+    })
+
+    expect(await findByText('on September 29th, 2022')).toBeInTheDocument()
   })
 })

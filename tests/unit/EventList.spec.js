@@ -1,5 +1,5 @@
 import EventList from '@/views/EventList'
-import { mount } from '@vue/test-utils'
+import { render, waitFor } from '@testing-library/vue'
 import { createStore } from '@/store'
 import router from '@/router'
 import { events as mockEvents } from '../../db.json'
@@ -7,55 +7,40 @@ import { events as mockEvents } from '../../db.json'
 function mountEventList(config = {}) {
   config.mountOptions = config.mountOptions || {}
   config.plugins = config.plugins || {}
-  return mount(EventList, {
+  return render(EventList, {
     global: {
-      plugins: [
-        createStore(config.plugins.store), 
-        router
-      ]
+      plugins: [createStore(config.plugins.store), router]
     },
     ...config.mountOptions
   })
 }
 
-let wrapper
-
 describe('EventList', () => {
-
-  beforeEach(() => {
-    wrapper = mountEventList()
-  })
-
-  it('should render the events', () => {
-    expect(wrapper.exists()).toBeTruthy()
+  it('should render the events', async () => {
+    const { container } = await mountEventList()
+    expect(container).toBeInTheDocument()
   })
 
   describe('page title', () => {
-    it('is rendered with the correct text', () => {
-      const title = wrapper.find('[data-testid=event-list-title]')
-      expect(title.exists()).toBeTruthy()
-      expect(title.text()).toContain('Events for Good')
+    it('is rendered with the correct text', async () => {
+      const { findByText } = mountEventList()
+      expect(await findByText('Events for Good')).toBeInTheDocument()
     })
   })
 
   describe('events', () => {
-    it('are rendered in a list with necessary information', () => {
-      wrapper = mountEventList({
-        plugins: {
-          store: {
-            state: () => ({
-              events: mockEvents
-            })
+    it('are rendered in a list with necessary information', async () => {
+      const { getAllByTestId } = mountEventList()
+      await waitFor(async () => {
+        const events = await getAllByTestId('event')
+        expect(events).toHaveLength(mockEvents.length)
+        for (let i = 0; i < events.length; i++) {
+          expect(events[i]).toHaveTextContent(mockEvents[i].title)
+
+          if (mockEvents[i].date) {
+            expect(events[i]).toHaveTextContent(mockEvents[i].date)
           }
         }
-      })
-      const events = wrapper.findAll('[data-testid=event]')
-      expect(events).toHaveLength(mockEvents.length)
-
-      events.forEach((event, i) => {
-        const eventText = event.text()
-        expect(eventText).toContain(mockEvents[i].title)
-        expect(eventText).toContain(mockEvents[i].date)
       })
     })
   })

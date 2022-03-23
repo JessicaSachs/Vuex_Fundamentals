@@ -1,6 +1,6 @@
 <template>
-  <div class="event-card">
-    <span>@{{ event.time }} on {{ event.date }}</span>
+  <div class="event-card" data-testid="event">
+    <span>{{ eventDateTime }}</span>
     <h4>{{ event.title }}</h4>
   </div>
 </template>
@@ -11,6 +11,20 @@ export default {
     event: {
       type: Object,
       required: true
+    }
+  },
+  computed: {
+    eventDateTime() {
+      let eventDateTime = []
+      if (this.event.time) {
+        eventDateTime.push(`@${this.event.time}`)
+      }
+
+      if (this.event.date) {
+        eventDateTime.push(`on ${this.event.date}`)
+      }
+
+      return eventDateTime.join(' ')
     }
   }
 }
