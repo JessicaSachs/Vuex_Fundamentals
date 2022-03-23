@@ -1,7 +1,7 @@
 import { server } from '../../src/mocks/server'
 import { rest } from 'msw'
 import EventList from '@/views/EventList'
-import { render, waitFor } from '@testing-library/vue'
+import { render, screen, waitFor } from '@testing-library/vue'
 import { createStore } from '@/store'
 import router from '@/router'
 import { events as mockEvents } from '../../db.json'
@@ -25,8 +25,8 @@ describe('EventList', () => {
 
   describe('page title', () => {
     it('is rendered with the correct text', async () => {
-      const { findByText } = mountEventList()
-      expect(await findByText('Events for Good')).toBeInTheDocument()
+      mountEventList()
+      expect(await screen.findByText('Events for Good')).toBeInTheDocument()
     })
   })
 
@@ -58,9 +58,9 @@ describe('EventList', () => {
 
   describe('events', () => {
     it('are rendered in a list with necessary information', async () => {
-      const { getAllByTestId } = mountEventList()
+      mountEventList()
       await waitFor(async () => {
-        const events = await getAllByTestId('event')
+        const events = await screen.getAllByTestId('event')
         expect(events).toHaveLength(mockEvents.length)
         for (let i = 0; i < events.length; i++) {
           expect(events[i]).toHaveTextContent(mockEvents[i].title)
