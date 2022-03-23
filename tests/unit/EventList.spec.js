@@ -38,7 +38,7 @@ describe('EventList', () => {
         })
       )
 
-      const { getByText } = render(
+      render(
         {
           template: `<router-view/>`
         },
@@ -50,8 +50,8 @@ describe('EventList', () => {
       )
 
       await waitFor(() => {
-        expect(getByText('Oops! There was an error:')).toBeInTheDocument()
-        expect(getByText('Error: Request failed with status code 400')).toBeInTheDocument()
+        expect(screen.getByText('Oops! There was an error:')).toBeInTheDocument()
+        expect(screen.getByText('Error: Request failed with status code 400')).toBeInTheDocument()
       })
     })
   })
