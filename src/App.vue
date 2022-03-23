@@ -1,11 +1,11 @@
 <template>
   <div id="app">
-    <div id="nav">
+    <nav>
       <router-link :to="{ name: 'EventList' }">Events</router-link> |
       <router-link :to="{ name: 'About' }">About</router-link>
       |
       <router-link :to="{ name: 'EventCreate' }">Create Event</router-link>
-    </div>
+    </nav>
     <router-view />
   </div>
 </template>
@@ -70,16 +70,16 @@ input:focus {
   outline: 0;
 }
 
-#nav {
+nav {
   padding: 30px;
 }
 
-#nav a {
+nav a {
   font-weight: bold;
   color: #2c3e50;
 }
 
-#nav a.router-link-exact-active {
+nav a.router-link-exact-active {
   color: #42b983;
 }
 
